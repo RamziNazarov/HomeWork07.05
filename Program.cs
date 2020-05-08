@@ -1,4 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
+using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Homework
 {
@@ -30,15 +38,55 @@ namespace Homework
         }
         static void Update()
         {
-
+            using(var context = new RamziDBContext())
+            {
+                Read();
+                Console.Write("Введите id: ");
+                int id = int .Parse(Console.ReadLine());
+                Customers customer = context.Customers.Find(id);
+                if(customer != null)
+                {
+                    Console.Write("Enter Name: ");
+                    customer.Name = Console.ReadLine();
+                    Console.Write("Enter LastName: ");
+                    customer.LastName = Console.ReadLine();
+                    System.Console.Write("Enter age: ");
+                    customer.Age = int.Parse(Console.ReadLine());
+                    if(context.SaveChanges() > 0)
+                    {
+                        System.Console.WriteLine("2123");
+                    }
+                }
+            }
         }
         static void Delete()
         {
-
+            Read();
+            using(var context = new RamziDBContext())
+            {
+            Console.Write("Введите id: ");
+                int id = int .Parse(Console.ReadLine());
+                Customers customer = context.Customers.Find(id);
+                if(customer != null )
+                {
+                    context.Customers.Remove(customer);
+                    if(context.SaveChanges() > 0)
+                    {
+                        System.Console.WriteLine("successfull");
+                    }
+                }
+            }
         }
         static void Read()
         {
-
+            using(var context = new RamziDBContext())
+            {
+                var customers = context.Customers.ToList();
+                foreach(var items in customers)
+                {
+                    System.Console.WriteLine($"Id = {items.Id} | Name = {items.Name} | LastName = {items.LastName} | Age = {items.Age}");
+                }
+            }
         }
 
         static void Main(string[] args)
@@ -67,6 +115,7 @@ namespace Homework
                     break;
                     case "4":
                     Read();
+                    Console.ReadKey();
                     break;
                 }
             }
