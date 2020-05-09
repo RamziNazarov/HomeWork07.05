@@ -18,6 +18,18 @@ namespace Homework
             {
                 using (var context = new RamziDBContext())
                 {
+                    System.Console.Write("Введите логин: ");
+                    string log = Console.ReadLine();
+                    var list = context.Customers.ToList();
+                    for(int i = 0; i < list.Count;i++)
+                    {
+                        if(list[i].Login == log){
+                        System.Console.WriteLine("Такой логин уже существует!");
+                        return;
+                        }
+                    }
+                    System.Console.Write("Введите пароль: ");
+                    string pas = Console.ReadLine();
                     Console.Write("Введите имя: ");
                     string name = Console.ReadLine();
                     Console.Write("Введите фамилию: ");
@@ -28,6 +40,8 @@ namespace Homework
                     customers.Name = name;
                     customers.LastName = lastName;
                     customers.Age = age;
+                    customers.Password = pas;
+                    customers.Login = log;
                     context.Customers.Add(customers);
                     int a = context.SaveChanges();
                     if (a > 0)
@@ -137,7 +151,7 @@ namespace Homework
                     var customers = context.Customers.ToList();
                     foreach (var items in customers)
                     {
-                        System.Console.WriteLine($"Id = {items.Id} | Name = {items.Name} | LastName = {items.LastName} | Age = {items.Age}");
+                        System.Console.WriteLine($"Id = {items.Id} | Name = {items.Name} | LastName = {items.LastName} | Age = {items.Age} | Login {items.Login} | Password = {items.Password}");
                     }
                     if (customers.Count == 0)
                     {
