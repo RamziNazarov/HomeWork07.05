@@ -14,109 +14,164 @@ namespace Homework
     {
         static void Create()
         {
-            using(var context = new RamziDBContext())
+            try
             {
-                Console.Write("Enter Id: ");
-                int id = int.Parse(Console.ReadLine());
-                Console.Write("Enter name: ");
-                string name = Console.ReadLine();
-                Console.Write("Enter lastName: ");
-                string lastName = Console.ReadLine();
-                Console.Write("Enter age: ");
-                int age = int.Parse(Console.ReadLine());
-                Customers customers = new Customers();
-                customers.Name = name;
-                customers.LastName = lastName;
-                customers.Age = age;
-                context.Customers.Add(customers);
-                int a = context.SaveChanges();
-                if(a > 0)
+                using (var context = new RamziDBContext())
                 {
-                    System.Console.WriteLine("2222");
+                    Console.Write("Введите имя: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Введите фамилию: ");
+                    string lastName = Console.ReadLine();
+                    Console.Write("Введите возраст: ");
+                    int age = int.Parse(Console.ReadLine());
+                    Customers customers = new Customers();
+                    customers.Name = name;
+                    customers.LastName = lastName;
+                    customers.Age = age;
+                    context.Customers.Add(customers);
+                    int a = context.SaveChanges();
+                    if (a > 0)
+                    {
+                        System.Console.WriteLine("Успешно добавлен");
+                    }
+                    else System.Console.WriteLine("Прозошла ошибка во время добавления");
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                CWCRK();
             }
         }
         static void Update()
         {
-            using(var context = new RamziDBContext())
+            try
             {
-                Read();
-                Console.Write("Введите id: ");
-                int id = int .Parse(Console.ReadLine());
-                Customers customer = context.Customers.Find(id);
-                if(customer != null)
+                if (!Read(""))
+                { 
+                    System.Console.WriteLine("Нечего изменять, увы...");
+                }
+                else
                 {
-                    Console.Write("Enter Name: ");
-                    customer.Name = Console.ReadLine();
-                    Console.Write("Enter LastName: ");
-                    customer.LastName = Console.ReadLine();
-                    System.Console.Write("Enter age: ");
-                    customer.Age = int.Parse(Console.ReadLine());
-                    if(context.SaveChanges() > 0)
+                    using (var context = new RamziDBContext())
                     {
-                        System.Console.WriteLine("2123");
+                        Console.Write("Введите id: ");
+                        int id = int.Parse(Console.ReadLine());
+                        Customers customer = context.Customers.Find(id);
+                        if (customer != null)
+                        {
+                            Console.Write("Введите новое имя: ");
+                            customer.Name = Console.ReadLine();
+                            Console.Write("Ввведите новую фамилию: ");
+                            customer.LastName = Console.ReadLine();
+                            System.Console.Write("Введите новый возраст: ");
+                            customer.Age = int.Parse(Console.ReadLine());
+                            if (context.SaveChanges() > 0) Console.WriteLine("Успешно");
+                            else System.Console.WriteLine("Произошла ошибка во время изменения");
+                        }
+                        else System.Console.WriteLine("Клиент с таким id не существует");
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                CWCRK();
             }
         }
         static void Delete()
         {
-            Read();
-            using(var context = new RamziDBContext())
+            try
             {
-            Console.Write("Введите id: ");
-                int id = int .Parse(Console.ReadLine());
-                Customers customer = context.Customers.Find(id);
-                if(customer != null )
+                if (!Read(""))
                 {
-                    context.Customers.Remove(customer);
-                    if(context.SaveChanges() > 0)
+                    System.Console.WriteLine("Некого удалять");
+                }
+                else
+                {
+                    using (var context = new RamziDBContext())
                     {
-                        System.Console.WriteLine("successfull");
+                        Console.Write("Введите id клиента которого хотите удалить: ");
+                        int id = int.Parse(Console.ReadLine());
+                        Customers customer = context.Customers.Find(id);
+                        if (customer != null)
+                        {
+                            System.Console.Write($"Вы точно хотите удалить клиента {customer.Name}?(Y/N):");
+                            if (Console.ReadLine().ToLower() == "y") context.Customers.Remove(customer);
+                            if (context.SaveChanges() > 0) Console.WriteLine("successfull");
+                            else System.Console.WriteLine("Customer not deleted");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Клиент с таким id не существует");
+                        }
                     }
                 }
             }
-        }
-        static void Read()
-        {
-            using(var context = new RamziDBContext())
+            catch (Exception ex)
             {
-                var customers = context.Customers.ToList();
-                foreach(var items in customers)
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                CWCRK();
+            }
+        }
+        static void CWCRK()
+        {
+            System.Console.Write("Press any key to continue...");
+            Console.ReadKey();
+        }
+        static bool Read(string a = "1")
+        {
+            try
+            {
+                using (var context = new RamziDBContext())
                 {
-                    System.Console.WriteLine($"Id = {items.Id} | Name = {items.Name} | LastName = {items.LastName} | Age = {items.Age}");
+                    var customers = context.Customers.ToList();
+                    foreach (var items in customers)
+                    {
+                        System.Console.WriteLine($"Id = {items.Id} | Name = {items.Name} | LastName = {items.LastName} | Age = {items.Age}");
+                    }
+                    if (customers.Count == 0)
+                    {
+                        System.Console.WriteLine("В данный момент список пуст.");
+                        return false;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (a == "1")
+                    CWCRK();
+            }
+            return true;
         }
-
         static void Main(string[] args)
         {
-            using(var context = new RamziDBContext())
-            {
-                
-            }
             string choice = "1";
-            while(choice != "5")
+            while (choice != "5")
             {
                 Console.Clear();
-                Console.Write("");
+                Console.Write("1. Create\n2. Update\n3. Delete\n4. Read\n5. Exit\nChoice: ");
                 choice = Console.ReadLine();
-                switch(choice)
+                switch (choice)
                 {
-                    case "1":
-                    Create();
-                    Console.ReadKey();
-                    break;
-                    case "2":
-                    Update();
-                    break;
-                    case "3":
-                    Delete();
-                    break;
-                    case "4":
-                    Read();
-                    Console.ReadKey();
-                    break;
+                    case "1": Create(); break;
+                    case "2": Update(); break;
+                    case "3": Delete(); break;
+                    case "4": Read(); break;
                 }
             }
         }
